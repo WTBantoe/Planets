@@ -51,9 +51,17 @@ def collide(planets):
 
 def move(planets):
     collide(planets)
+    Planet.time_now = Planet.time_now + Defult.TIME_SPAN
+    Planet.move_time = Planet.move_time + 1
     fixed = planets.pop()
     for each in planets:
         each.force = [0,0,0]
+        if Planet.move_time % 10 == 0:
+            Planet.trail_length = Planet.trail_length + 1
+            if Planet.trail_length == Planet.max_trail_length + 2:
+                each.trail.pop(0)
+                Planet.trail_length = Planet.max_trail_length + 1
+            each.trail.append(each.position)
     for i in range(len(planets)-1):
         for j in range(i+1,len(planets)):
             distance = cal_dis(planets[i],planets[j])
@@ -89,7 +97,10 @@ class Planet():
     smallest_radius = 5 #星球最小半径
     biggest_radius = 10 #星球最大半径
     biggest_velocity = 10 #星球各方向的最大速度
-    trail_length = 10 #星球保留的轨迹长度
+    max_trail_length = 2000 #星球保留的轨迹长度
+    trail_length = 0 #目前轨迹长度
+    time_now = 0 #目前时间
+    move_time = 0 #移动次数
 
     def __init__(self,boundry,fix=False,*args):
         if fix == False:
@@ -101,7 +112,7 @@ class Planet():
                              #random.uniform(-Planet.biggest_velocity,Planet.biggest_velocity)]
             self.force = [0,0,0]
             self.color = (random.randint(50,255),random.randint(50,255),random.randint(50,255))
-            self.trail = []
+            self.trail = [self.position,self.position]
             self.is_fixed = False
             self.is_collided = False
         else:
@@ -111,6 +122,6 @@ class Planet():
             self.velocity = [0,0,0]
             self.force = [0,0,0]
             self.color = (random.randint(50,255),random.randint(50,255),random.randint(50,255))
-            self.trail = []
+            self.trail = [self.position,self.position]
             self.is_fixed = True
             self.is_collided = False
